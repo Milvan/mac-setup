@@ -94,12 +94,12 @@ If you want to add any new extension besides all the ones listed below then upda
 
 ## **Install Developer Utilities**
 - [x] [SDKMan](https://sdkman.io)
-- [x] [Spectacle](https://www.spectacleapp.com)
+- [x] [Rectangle](https://rectangleapp.com)
 - [x] [Tree]()
 - [x] [Ctop](https://ctop.sh)
 - [x] [jq](https://stedolan.github.io/jq/)
 - [x] [Postman](https://www.getpostman.com)
-- [x] [httpie](https://httpie.org)
+- [x] [httpie](https://httpie.io)
 - [x] [NVM](https://github.com/nvm-sh/nvm)
 - [x] [Bash Completion](https://github.com/scop/bash-completion)
 
@@ -110,7 +110,7 @@ If you want to add any new extension besides all the ones listed below then upda
 
 ## **Install Database Tools**
 - [x] [PGAdmin](https://www.pgadmin.org)
-- [x] [Mongo Studio 3T](https://studio3t.com)
+- [x] [Studio 3T](https://studio3t.com)
 
 
 ## **Install Productivity Tools**
