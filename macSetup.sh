@@ -34,16 +34,14 @@ xcode-select --install
 
 if test ! $(which brew); then
   echo "Installing homebrew..."
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install caskroom/cask/brew-cask
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     brew tap homebrew/cask-versions
-    brew tap homebrew/cask-cask
-    brew tap 'homebrew/bundle'
-    brew tap 'homebrew/cask'
-    brew tap 'homebrew/cask-drivers'
-    brew tap 'homebrew/cask-fonts'
-    brew tap 'homebrew/core'
-    brew tap 'homebrew/services'
+    brew tap homebrew/bundle
+    brew tap homebrew/cask
+    brew tap homebrew/cask-drivers
+    brew tap homebrew/cask-fonts
+    brew tap homebrew/core
+    brew tap homebrew/services
     brew tap aws/tap
 
 fi
@@ -67,7 +65,7 @@ CaskGeneralToolList=(
     spotify
 )
 if [ "$General" != "${General#[Yy]}" ] ;then
-    brew cask install --appdir="/Applications" ${CaskGeneralToolList[@]}
+    brew install --cask --appdir="/Applications" ${CaskGeneralToolList[@]}
 else
     echo No general tools
 fi
@@ -108,7 +106,7 @@ CaskDeveloperUtilitiesList=(
 if [ "$DeveloperUtilities" != "${DeveloperUtilities#[Yy]}" ] ;then
     
     brew install ${DeveloperUtilitiesList[@]}
-    brew cask install ${CaskDeveloperUtilitiesList[@]}
+    brew install --cask ${CaskDeveloperUtilitiesList[@]}
 
     brew link vim
 
@@ -129,21 +127,21 @@ else
 fi
 
 ############# ZSH mods #######################
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
 
 ############# Database Tools #############
 beginDeploy "############# Database Tools #############"
 
 
 DatabaseToolList=(
-    kafkacat
+    kcat
 )
 CaskDatabaseToolList=(
     graphiql
 )
 if [ "$Database" != "${Database#[Yy]}" ] ;then
     brew install ${DatabaseToolList[@]}
-    brew cask install ${CaskDatabaseToolList[@]}
+    brew install --cask ${CaskDatabaseToolList[@]}
 
 else
     echo No DB tools
@@ -160,7 +158,7 @@ CaskIDEsList=(
     # android-studio
 )
 if [ "$IDEs" != "${IDEs#[Yy]}" ] ;then
-    brew cask install --appdir="/Applications" ${CaskIDEsList[@]}
+    brew install --cask --appdir="/Applications" ${CaskIDEsList[@]}
     cat vscode-extensions.txt | xargs -L1 code --install-extension
 
 else
@@ -192,7 +190,7 @@ CaskDevOpsToolList=(
 )
 if [ "$DevOps" != "${DevOps#[Yy]}" ] ;then
     brew install ${DevOpsToolList[@]}
-    brew cask install ${CaskDevOpsToolList[@]}
+    brew install --cask ${CaskDevOpsToolList[@]}
 
     ## DOCKER APP
     wget -P ~/Downloads/ https://github.com/docker/app/releases/download/v0.8.0/docker-app-darwin.tar.gz
@@ -233,7 +231,7 @@ CaskProductivityToolList=(
     # zoomus
 )
 if [ "$Productivity" != "${Productivity#[Yy]}" ] ;then
-    brew cask install --appdir="/Applications" ${CaskProductivityToolList[@]}
+    brew install --cask --appdir="/Applications" ${CaskProductivityToolList[@]}
 else
     echo No Productivity
 fi
