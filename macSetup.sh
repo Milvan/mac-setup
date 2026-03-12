@@ -119,6 +119,14 @@ if [ "$DeveloperUtilities" != "${DeveloperUtilities#[Yy]}" ] ;then
     echo "Installing latest nvm..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
+    echo "Installing latest stable Node.js and setting .nvmrc..."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm install --lts
+    nvm use --lts
+    nvm alias default 'lts/*'
+    node -v > ~/.nvmrc
+
     echo "Installing latest bun..."
     curl -fsSL https://bun.sh/install | bash
 
