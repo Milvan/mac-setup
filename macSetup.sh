@@ -29,6 +29,9 @@ read Productivity
 echo -n "Do you wish to install Mac Application (${bold}${green}y${reset}/${bold}${red}n${reset})? "
 read MacApplication
 
+echo -n "Do you wish to install Custom Keyboard Layouts (${bold}${green}y${reset}/${bold}${red}n${reset})? "
+read KeyboardLayout
+
 echo "Installing command line developer tools..."
 xcode-select --install
 
@@ -296,7 +299,13 @@ git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 vim +PluginInstall +qall
 
 beginDeploy "############ Custom Dvorak Keyboard layout####"
-cp $currentdir/keyboard_layout/* /Library/Keyboard\ Layouts/.
+if [ "$KeyboardLayout" != "${KeyboardLayout#[Yy]}" ] ;then
+    mkdir -p ~/Library/Keyboard\ Layouts
+    cp $currentdir/keyboard_layout/* ~/Library/Keyboard\ Layouts/.
+    echo "Keyboard layouts installed to ~/Library/Keyboard Layouts"
+else
+    echo "Skipping Keyboard layouts"
+fi
 
 runtime=$((($(date +%s)-$start)/60))
 beginDeploy "############# Total Setup Time ############# $runtime Minutes"

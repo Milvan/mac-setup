@@ -27,6 +27,7 @@ xcode-select --install
 - [x] Mac Screenshot Config
 - [x] Git Aliases
 - [x] Docker Aliases
+- [x] Custom Keyboard Layouts (Dvorak)
 
 ## **Install Browsers**
 - [x] [Google Chrome](https://www.google.com/chrome/)
