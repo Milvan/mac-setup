@@ -96,9 +96,11 @@ If you want to add any new extension besides all the ones listed below then upda
 - [x] [NVM](https://github.com/nvm-sh/nvm)
 - [x] [Bash Completion](https://github.com/scop/bash-completion)
 - [x] [pnpm](https://pnpm.io)
+- [x] [Bun](https://bun.sh)
 - [x] [Gemini CLI](https://github.com/google/gemini-cli)
 - [x] [1Password CLI](https://developer.1password.com/docs/cli)
 - [x] [Flycut](https://github.com/TermiT/Flycut)
+- [x] [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
 
 ## **Install Language SDKs/Platforms**
 - [x] [Dotnet SDK](https://dotnet.microsoft.com/download)

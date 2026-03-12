@@ -86,7 +86,6 @@ DeveloperUtilitiesList=(
     nmap
     wget
     go
-    nvm
     bash-completion
     zsh
     zsh-completions
@@ -102,6 +101,7 @@ CaskDeveloperUtilitiesList=(
     postman
     1password-cli
     flycut
+    google-cloud-sdk
     # dotnet-sdk
     # wireshark
     # google-chrome-canary
@@ -116,13 +116,11 @@ if [ "$DeveloperUtilities" != "${DeveloperUtilities#[Yy]}" ] ;then
 
     npm install -g @google/gemini-cli
 
-    mkdir ~/.nvm
-    echo '
-    # NVM CONFIG
-    export NVM_DIR="$HOME/.nvm"
-        [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh" # This loads nvm
-        [ -s "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" ] && . "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion' >> ~/.bash_profile
+    echo "Installing latest nvm..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
+    echo "Installing latest bun..."
+    curl -fsSL https://bun.sh/install | bash
 
     echo '
     # BASH-COMPLETION CONFIG
