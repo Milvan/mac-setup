@@ -35,22 +35,22 @@ read KeyboardLayout
 echo "Installing command line developer tools..."
 xcode-select --install
 
-if test ! $(which brew); then
+if ! command -v brew &> /dev/null; then
   echo "Installing homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  if [ -x "/opt/homebrew/bin/brew" ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [ -x "/usr/local/bin/brew" ]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
-
-    brew tap homebrew/cask-versions
-    brew tap homebrew/cask-fonts
-    brew tap homebrew/services
-    brew tap aws/tap
-
 fi
+
+# Ensure brew is available in the current shell session
+if [ -x "/opt/homebrew/bin/brew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x "/usr/local/bin/brew" ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+brew tap homebrew/cask-versions
+brew tap homebrew/cask-fonts
+brew tap homebrew/services
+brew tap aws/tap
 
 echo "Updating homebrew..."
 brew update
