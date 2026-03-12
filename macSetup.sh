@@ -358,5 +358,14 @@ else
     echo "Skipping Keyboard layouts"
 fi
 
+beginDeploy "############# SSH Key Setup #############"
+if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+    echo "Generating new RSA SSH key..."
+    ssh-keygen -t rsa -b 4096 -f "$HOME/.ssh/id_rsa" -N ""
+    echo "SSH key generated."
+else
+    echo "SSH key ~/.ssh/id_rsa already exists, skipping."
+fi
+
 runtime=$((($(date +%s)-$start)/60))
 beginDeploy "############# Total Setup Time ############# $runtime Minutes"
