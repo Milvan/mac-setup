@@ -98,7 +98,6 @@ DeveloperUtilitiesList=(
     reattach-to-user-namespace
 )
 CaskDeveloperUtilitiesList=(
-    cheatsheet
     rectangle
     postman
     1password-cli

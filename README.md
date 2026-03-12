@@ -117,7 +117,6 @@ If you want to add any new extension besides all the ones listed below then upda
 - [x] [Slack](https://slack.com)
 - [x] [Evernote](https://evernote.com)
 - [x] [The Unarchiver](https://theunarchiver.com)
-- [x] [CheatSheet](https://mediaatelier.com/CheatSheet/)
 - [x] [Adobe Creative Cloud](https://www.adobe.com/creativecloud.html)
 
 
