@@ -32,8 +32,12 @@ read MacApplication
 echo -n "Do you wish to install Custom Keyboard Layouts (${bold}${green}y${reset}/${bold}${red}n${reset})? "
 read KeyboardLayout
 
-echo "Installing command line developer tools..."
-xcode-select --install
+if ! xcode-select -p &> /dev/null; then
+  echo "Installing command line developer tools..."
+  xcode-select --install
+else
+  echo "Command line developer tools already installed."
+fi
 
 if ! command -v brew &> /dev/null; then
   echo "Installing homebrew..."
@@ -115,10 +119,18 @@ if [ "$DeveloperUtilities" != "${DeveloperUtilities#[Yy]}" ] ;then
 
     brew link vim
 
-    npm install -g @google/gemini-cli
+    if ! command -v gemini &> /dev/null; then
+        npm install -g @google/gemini-cli
+    else
+        echo "gemini-cli already installed."
+    fi
 
-    echo "Installing latest nvm..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+    if [ ! -d "$HOME/.nvm" ]; then
+        echo "Installing latest nvm..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+    else
+        echo "nvm already installed."
+    fi
 
     echo "Installing latest stable Node.js and setting .nvmrc..."
     export NVM_DIR="$HOME/.nvm"
@@ -128,8 +140,12 @@ if [ "$DeveloperUtilities" != "${DeveloperUtilities#[Yy]}" ] ;then
     nvm alias default 'lts/*'
     node -v > ~/.nvmrc
 
-    echo "Installing latest bun..."
-    curl -fsSL https://bun.sh/install | bash
+    if ! command -v bun &> /dev/null && [ ! -d "$HOME/.bun" ]; then
+        echo "Installing latest bun..."
+        curl -fsSL https://bun.sh/install | bash
+    else
+        echo "bun already installed."
+    fi
 
     echo '
     # BASH-COMPLETION CONFIG
@@ -140,7 +156,11 @@ else
 fi
 
 ############# ZSH mods #######################
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+    echo "oh-my-zsh already installed."
+fi
 
 ############# Database Tools #############
 beginDeploy "############# Database Tools #############"
@@ -173,7 +193,17 @@ CaskIDEsList=(
 )
 if [ "$IDEs" != "${IDEs#[Yy]}" ] ;then
     brew install --cask --appdir="/Applications" ${CaskIDEsList[@]}
-    cat vscode-extensions.txt | xargs -L1 code --install-extension
+    if command -v code &> /dev/null; then
+        INSTALLED_EXTS=$(code --list-extensions | tr '[:upper:]' '[:lower:]')
+        while read -r ext; do
+            ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+            if ! echo "$INSTALLED_EXTS" | grep -q "^$ext_lower$"; then
+                code --install-extension "$ext"
+            else
+                echo "VSCode extension $ext already installed."
+            fi
+        done < vscode-extensions.txt
+    fi
 
 else
     echo No IDEs
@@ -203,10 +233,14 @@ if [ "$DevOps" != "${DevOps#[Yy]}" ] ;then
     brew install --cask ${CaskDevOpsToolList[@]}
 
     ## DOCKER APP
-    wget -P ~/Downloads/ https://github.com/docker/app/releases/download/v0.8.0/docker-app-darwin.tar.gz
-    tar -xvf ~/Downloads/docker-app-darwin.tar.gz -C ~/Downloads/
-    mv ~/Downloads/docker-app-darwin /usr/local/bin/docker-app
-    rm ~/Downloads/docker-app-darwin.tar.gz
+    if [ ! -f "/usr/local/bin/docker-app" ]; then
+        wget -P ~/Downloads/ https://github.com/docker/app/releases/download/v0.8.0/docker-app-darwin.tar.gz
+        tar -xvf ~/Downloads/docker-app-darwin.tar.gz -C ~/Downloads/
+        mv ~/Downloads/docker-app-darwin /usr/local/bin/docker-app
+        rm ~/Downloads/docker-app-darwin.tar.gz
+    else
+        echo "docker-app already installed."
+    fi
 
 
     ## Install AWS CLI
@@ -261,7 +295,9 @@ MacApplicationToolList=(
     # 985367838 # Microsoft Outlook
 )
 if [ "$MacApplication" != "${MacApplication#[Yy]}" ] ;then
-    brew install mas
+    if ! command -v mas &> /dev/null; then
+        brew install mas
+    fi
     mas install ${MacApplicationToolList[@]}
 
     echo "######### Save screenshots to ${HOME}/Pictures/Screenshots"
@@ -290,19 +326,34 @@ source ~/.bash_profile
 beginDeploy "############# Copy config files  #############"
 currentdir=`pwd`
 
-rm -r ~/.vim ~/.vimrc ~/.zshrc ~/.gitconfig
-ln -s $currentdir/vimrc ~/.vimrc
-ln -s $currentdir/zshrc ~/.zshrc
-ln -s $currentdir/gitconfig ~/.gitconfig
-ln -s $currentdir/vim ~/.vim
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-vim +PluginInstall +qall
+for file in vim vimrc zshrc gitconfig; do
+    target="$HOME/.$file"
+    source="$currentdir/$file"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        echo ".$file already exists, skipping symlink."
+    else
+        ln -s "$source" "$target"
+    fi
+done
+if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    vim +PluginInstall +qall
+else
+    echo "Vundle already installed, skipping Vim plugin installation."
+fi
 
 beginDeploy "############ Custom Dvorak Keyboard layout####"
 if [ "$KeyboardLayout" != "${KeyboardLayout#[Yy]}" ] ;then
     mkdir -p ~/Library/Keyboard\ Layouts
-    cp $currentdir/keyboard_layout/* ~/Library/Keyboard\ Layouts/.
-    echo "Keyboard layouts installed to ~/Library/Keyboard Layouts"
+    for layout in "$currentdir"/keyboard_layout/*; do
+        filename=$(basename "$layout")
+        if [ ! -f "$HOME/Library/Keyboard Layouts/$filename" ]; then
+            cp "$layout" "$HOME/Library/Keyboard Layouts/"
+            echo "Installed keyboard layout: $filename"
+        else
+            echo "Keyboard layout $filename already exists, skipping."
+        fi
+    done
 else
     echo "Skipping Keyboard layouts"
 fi
