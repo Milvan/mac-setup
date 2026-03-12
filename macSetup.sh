@@ -66,6 +66,7 @@ CaskGeneralToolList=(
     google-chrome
     firefox
     spotify
+    1password
 )
 if [ "$General" != "${General#[Yy]}" ] ;then
     brew install --cask --appdir="/Applications" ${CaskGeneralToolList[@]}
@@ -147,10 +148,12 @@ beginDeploy "############# Database Tools #############"
 
 
 DatabaseToolList=(
-    kafkacat
+    pgcli
+    postgresql
 )
 CaskDatabaseToolList=(
-    graphiql
+    pgadmin4
+    postico
 )
 if [ "$Database" != "${Database#[Yy]}" ] ;then
     brew install ${DatabaseToolList[@]}
