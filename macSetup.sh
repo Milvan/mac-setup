@@ -37,16 +37,17 @@ xcode-select --install
 
 if test ! $(which brew); then
   echo "Installing homebrew..."
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install caskroom/cask/brew-cask
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  if [ -x "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+
     brew tap homebrew/cask-versions
-    brew tap homebrew/cask-cask
-    brew tap 'homebrew/bundle'
-    brew tap 'homebrew/cask'
-    brew tap 'homebrew/cask-drivers'
-    brew tap 'homebrew/cask-fonts'
-    brew tap 'homebrew/core'
-    brew tap 'homebrew/services'
+    brew tap homebrew/cask-fonts
+    brew tap homebrew/services
     brew tap aws/tap
 
 fi
