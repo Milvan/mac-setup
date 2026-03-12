@@ -93,13 +93,15 @@ DeveloperUtilitiesList=(
     vim
     python3
     node
-    tmux
+    pnpm
     reattach-to-user-namespace
 )
 CaskDeveloperUtilitiesList=(
     cheatsheet
     rectangle
     postman
+    1password-cli
+    flycut
     # dotnet-sdk
     # wireshark
     # google-chrome-canary
@@ -111,6 +113,8 @@ if [ "$DeveloperUtilities" != "${DeveloperUtilities#[Yy]}" ] ;then
     brew cask install ${CaskDeveloperUtilitiesList[@]}
 
     brew link vim
+
+    npm install -g @google/gemini-cli
 
     mkdir ~/.nvm
     echo '
@@ -155,7 +159,6 @@ beginDeploy "############# IDEs #############"
 
 CaskIDEsList=(
     visual-studio-code
-    intellij-idea
     # visual-studio
     # android-studio
 )
@@ -178,17 +181,13 @@ DevOpsToolList=(
     # nomad
     # packer
     # terragrunt
-    ansible
     # awscli
     # aws-sam-cli
     # kompose
 )
 CaskDevOpsToolList=(
-    vagrant
     # vmware-fusion
-    virtualbox
     docker
-    vagrant-manager
 )
 if [ "$DevOps" != "${DevOps#[Yy]}" ] ;then
     brew install ${DevOpsToolList[@]}
@@ -250,7 +249,6 @@ MacApplicationToolList=(
     497799835 # Xcode
     # 1450874784 # Transporter
     # 1274495053 # Microsoft To Do
-    1295203466 # Microsoft Remote Desktop 10
     # 985367838 # Microsoft Outlook
 )
 if [ "$MacApplication" != "${MacApplication#[Yy]}" ] ;then
@@ -277,19 +275,14 @@ brew cleanup
 # source ~/.docker_aliases
 # 
 
-beginDeploy "############# K8s ALIASES #############"
-sh -c 'curl -s https://raw.githubusercontent.com/maxyermayank/developer-mac-setup/master/.kubectl_aliases >> ~/.kubectl_aliases'
-source ~/.kubectl_aliases
-
 beginDeploy "############# SETUP BASH PROFILE #############"
 source ~/.bash_profile
 
 beginDeploy "############# Copy config files  #############"
 currentdir=`pwd`
 
-rm -r ~/.vim ~/.vimrc ~/.tmux.conf ~/.zshrc ~/.gitconfig
+rm -r ~/.vim ~/.vimrc ~/.zshrc ~/.gitconfig
 ln -s $currentdir/vimrc ~/.vimrc
-ln -s $currentdir/tmux.conf ~/.tmux.conf
 ln -s $currentdir/zshrc ~/.zshrc
 ln -s $currentdir/gitconfig ~/.gitconfig
 ln -s $currentdir/vim ~/.vim
