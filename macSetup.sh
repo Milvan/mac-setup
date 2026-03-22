@@ -29,24 +29,29 @@ read Productivity
 echo -n "Do you wish to install Mac Application (${bold}${green}y${reset}/${bold}${red}n${reset})? "
 read MacApplication
 
-echo "Installing command line developer tools..."
-xcode-select --install
+echo -n "Do you wish to install Custom Keyboard Layouts (${bold}${green}y${reset}/${bold}${red}n${reset})? "
+read KeyboardLayout
 
-if test ! $(which brew); then
-  echo "Installing homebrew..."
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install caskroom/cask/brew-cask
-    brew tap homebrew/cask-versions
-    brew tap homebrew/cask-cask
-    brew tap 'homebrew/bundle'
-    brew tap 'homebrew/cask'
-    brew tap 'homebrew/cask-drivers'
-    brew tap 'homebrew/cask-fonts'
-    brew tap 'homebrew/core'
-    brew tap 'homebrew/services'
-    brew tap aws/tap
-
+if ! xcode-select -p &> /dev/null; then
+  echo "Installing command line developer tools..."
+  xcode-select --install
+else
+  echo "Command line developer tools already installed."
 fi
+
+if ! command -v brew &> /dev/null; then
+  echo "Installing homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Ensure brew is available in the current shell session
+if [ -x "/opt/homebrew/bin/brew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x "/usr/local/bin/brew" ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+brew tap aws/tap
 
 echo "Updating homebrew..."
 brew update
@@ -65,9 +70,10 @@ CaskGeneralToolList=(
     google-chrome
     firefox
     spotify
+    1password
 )
 if [ "$General" != "${General#[Yy]}" ] ;then
-    brew cask install --appdir="/Applications" ${CaskGeneralToolList[@]}
+    brew install --cask --appdir="/Applications" ${CaskGeneralToolList[@]}
 else
     echo No general tools
 fi
@@ -86,20 +92,21 @@ DeveloperUtilitiesList=(
     nmap
     wget
     go
-    nvm
     bash-completion
     zsh
     zsh-completions
     vim
     python3
     node
-    tmux
+    pnpm
     reattach-to-user-namespace
 )
 CaskDeveloperUtilitiesList=(
-    cheatsheet
     rectangle
     postman
+    1password-cli
+    flycut
+    google-cloud-sdk
     # dotnet-sdk
     # wireshark
     # google-chrome-canary
@@ -108,17 +115,37 @@ CaskDeveloperUtilitiesList=(
 if [ "$DeveloperUtilities" != "${DeveloperUtilities#[Yy]}" ] ;then
     
     brew install ${DeveloperUtilitiesList[@]}
-    brew cask install ${CaskDeveloperUtilitiesList[@]}
+    brew install --cask ${CaskDeveloperUtilitiesList[@]}
 
     brew link vim
 
-    mkdir ~/.nvm
-    echo '
-    # NVM CONFIG
-    export NVM_DIR="$HOME/.nvm"
-        [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh" # This loads nvm
-        [ -s "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" ] && . "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion' >> ~/.bash_profile
+    if ! command -v gemini &> /dev/null; then
+        npm install -g @google/gemini-cli
+    else
+        echo "gemini-cli already installed."
+    fi
 
+    if [ ! -d "$HOME/.nvm" ]; then
+        echo "Installing latest nvm..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+    else
+        echo "nvm already installed."
+    fi
+
+    echo "Installing latest stable Node.js and setting .nvmrc..."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm install --lts
+    nvm use --lts
+    nvm alias default 'lts/*'
+    node -v > ~/.nvmrc
+
+    if ! command -v bun &> /dev/null && [ ! -d "$HOME/.bun" ]; then
+        echo "Installing latest bun..."
+        curl -fsSL https://bun.sh/install | bash
+    else
+        echo "bun already installed."
+    fi
 
     echo '
     # BASH-COMPLETION CONFIG
@@ -129,21 +156,27 @@ else
 fi
 
 ############# ZSH mods #######################
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+    echo "oh-my-zsh already installed."
+fi
 
 ############# Database Tools #############
 beginDeploy "############# Database Tools #############"
 
 
 DatabaseToolList=(
-    kafkacat
+    pgcli
+    postgresql
 )
 CaskDatabaseToolList=(
-    graphiql
+    pgadmin4
+    postico
 )
 if [ "$Database" != "${Database#[Yy]}" ] ;then
     brew install ${DatabaseToolList[@]}
-    brew cask install ${CaskDatabaseToolList[@]}
+    brew install --cask ${CaskDatabaseToolList[@]}
 
 else
     echo No DB tools
@@ -155,13 +188,22 @@ beginDeploy "############# IDEs #############"
 
 CaskIDEsList=(
     visual-studio-code
-    intellij-idea
     # visual-studio
     # android-studio
 )
 if [ "$IDEs" != "${IDEs#[Yy]}" ] ;then
-    brew cask install --appdir="/Applications" ${CaskIDEsList[@]}
-    cat vscode-extensions.txt | xargs -L1 code --install-extension
+    brew install --cask --appdir="/Applications" ${CaskIDEsList[@]}
+    if command -v code &> /dev/null; then
+        INSTALLED_EXTS=$(code --list-extensions | tr '[:upper:]' '[:lower:]')
+        while read -r ext; do
+            ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+            if ! echo "$INSTALLED_EXTS" | grep -q "^$ext_lower$"; then
+                code --install-extension "$ext"
+            else
+                echo "VSCode extension $ext already installed."
+            fi
+        done < vscode-extensions.txt
+    fi
 
 else
     echo No IDEs
@@ -178,27 +220,27 @@ DevOpsToolList=(
     # nomad
     # packer
     # terragrunt
-    ansible
     # awscli
     # aws-sam-cli
     # kompose
 )
 CaskDevOpsToolList=(
-    vagrant
     # vmware-fusion
-    virtualbox
     docker
-    vagrant-manager
 )
 if [ "$DevOps" != "${DevOps#[Yy]}" ] ;then
     brew install ${DevOpsToolList[@]}
-    brew cask install ${CaskDevOpsToolList[@]}
+    brew install --cask ${CaskDevOpsToolList[@]}
 
     ## DOCKER APP
-    wget -P ~/Downloads/ https://github.com/docker/app/releases/download/v0.8.0/docker-app-darwin.tar.gz
-    tar -xvf ~/Downloads/docker-app-darwin.tar.gz -C ~/Downloads/
-    mv ~/Downloads/docker-app-darwin /usr/local/bin/docker-app
-    rm ~/Downloads/docker-app-darwin.tar.gz
+    if [ ! -f "/usr/local/bin/docker-app" ]; then
+        wget -P ~/Downloads/ https://github.com/docker/app/releases/download/v0.8.0/docker-app-darwin.tar.gz
+        tar -xvf ~/Downloads/docker-app-darwin.tar.gz -C ~/Downloads/
+        mv ~/Downloads/docker-app-darwin /usr/local/bin/docker-app
+        rm ~/Downloads/docker-app-darwin.tar.gz
+    else
+        echo "docker-app already installed."
+    fi
 
 
     ## Install AWS CLI
@@ -233,7 +275,7 @@ CaskProductivityToolList=(
     # zoomus
 )
 if [ "$Productivity" != "${Productivity#[Yy]}" ] ;then
-    brew cask install --appdir="/Applications" ${CaskProductivityToolList[@]}
+    brew install --cask --appdir="/Applications" ${CaskProductivityToolList[@]}
 else
     echo No Productivity
 fi
@@ -250,11 +292,12 @@ MacApplicationToolList=(
     497799835 # Xcode
     # 1450874784 # Transporter
     # 1274495053 # Microsoft To Do
-    1295203466 # Microsoft Remote Desktop 10
     # 985367838 # Microsoft Outlook
 )
 if [ "$MacApplication" != "${MacApplication#[Yy]}" ] ;then
-    brew install mas
+    if ! command -v mas &> /dev/null; then
+        brew install mas
+    fi
     mas install ${MacApplicationToolList[@]}
 
     echo "######### Save screenshots to ${HOME}/Pictures/Screenshots"
@@ -277,27 +320,52 @@ brew cleanup
 # source ~/.docker_aliases
 # 
 
-beginDeploy "############# K8s ALIASES #############"
-sh -c 'curl -s https://raw.githubusercontent.com/maxyermayank/developer-mac-setup/master/.kubectl_aliases >> ~/.kubectl_aliases'
-source ~/.kubectl_aliases
-
 beginDeploy "############# SETUP BASH PROFILE #############"
 source ~/.bash_profile
 
 beginDeploy "############# Copy config files  #############"
 currentdir=`pwd`
 
-rm -r ~/.vim ~/.vimrc ~/.tmux.conf ~/.zshrc ~/.gitconfig
-ln -s $currentdir/vimrc ~/.vimrc
-ln -s $currentdir/tmux.conf ~/.tmux.conf
-ln -s $currentdir/zshrc ~/.zshrc
-ln -s $currentdir/gitconfig ~/.gitconfig
-ln -s $currentdir/vim ~/.vim
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-vim +PluginInstall +qall
+for file in vim vimrc zshrc gitconfig; do
+    target="$HOME/.$file"
+    source="$currentdir/$file"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        echo ".$file already exists, skipping symlink."
+    else
+        ln -s "$source" "$target"
+    fi
+done
+if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    vim +PluginInstall +qall
+else
+    echo "Vundle already installed, skipping Vim plugin installation."
+fi
 
 beginDeploy "############ Custom Dvorak Keyboard layout####"
-cp $currentdir/keyboard_layout/* /Library/Keyboard\ Layouts/.
+if [ "$KeyboardLayout" != "${KeyboardLayout#[Yy]}" ] ;then
+    mkdir -p ~/Library/Keyboard\ Layouts
+    for layout in "$currentdir"/keyboard_layout/*; do
+        filename=$(basename "$layout")
+        if [ ! -f "$HOME/Library/Keyboard Layouts/$filename" ]; then
+            cp "$layout" "$HOME/Library/Keyboard Layouts/"
+            echo "Installed keyboard layout: $filename"
+        else
+            echo "Keyboard layout $filename already exists, skipping."
+        fi
+    done
+else
+    echo "Skipping Keyboard layouts"
+fi
+
+beginDeploy "############# SSH Key Setup #############"
+if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+    echo "Generating new RSA SSH key..."
+    ssh-keygen -t rsa -b 4096 -f "$HOME/.ssh/id_rsa" -N ""
+    echo "SSH key generated."
+else
+    echo "SSH key ~/.ssh/id_rsa already exists, skipping."
+fi
 
 runtime=$((($(date +%s)-$start)/60))
 beginDeploy "############# Total Setup Time ############# $runtime Minutes"

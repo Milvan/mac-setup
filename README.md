@@ -27,7 +27,7 @@ xcode-select --install
 - [x] Mac Screenshot Config
 - [x] Git Aliases
 - [x] Docker Aliases
-- [x] K8s Aliases
+- [x] Custom Keyboard Layouts (Dvorak)
 
 ## **Install Browsers**
 - [x] [Google Chrome](https://www.google.com/chrome/)
@@ -39,19 +39,13 @@ xcode-select --install
 - [x] [Terraform](https://www.terraform.io)
 - [x] [Vault](https://www.vaultproject.io)
 - [x] [Consul](https://www.consul.io)
-- [x] [Packer](https://www.packer.io)
-- [x] [Nomad](https://www.nomadproject.io)
-- [x] [Vagrant](https://www.vagrantup.com)
 
 ## **Install Virtualization Tools**
 - [x] [VMWare Fusion](https://www.vmware.com/products/fusion.html)
-- [x] [Oracle Virtualbox](https://www.virtualbox.org)
 - [x] [Docker](https://www.docker.com)
-- [x] [Vagrant Manager](http://vagrantmanager.com)
 
 
-## **Install IDEs (Intellij, Visual Studio, Visual Studio Code, Android Studio)**
-- [x] [Intellij](https://www.jetbrains.com/idea/)
+## **Install IDEs (Visual Studio, Visual Studio Code, Android Studio)**
 - [x] [Visual Studio](https://visualstudio.microsoft.com)
 - [x] [Visual Studio Code](https://code.visualstudio.com)
 - [x] [Android Studio](https://developer.android.com/studio)
@@ -102,6 +96,12 @@ If you want to add any new extension besides all the ones listed below then upda
 - [x] [httpie](https://httpie.org)
 - [x] [NVM](https://github.com/nvm-sh/nvm)
 - [x] [Bash Completion](https://github.com/scop/bash-completion)
+- [x] [pnpm](https://pnpm.io)
+- [x] [Bun](https://bun.sh)
+- [x] [Gemini CLI](https://github.com/google/gemini-cli)
+- [x] [1Password CLI](https://developer.1password.com/docs/cli)
+- [x] [Flycut](https://github.com/TermiT/Flycut)
+- [x] [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
 
 ## **Install Language SDKs/Platforms**
 - [x] [Dotnet SDK](https://dotnet.microsoft.com/download)
@@ -117,7 +117,6 @@ If you want to add any new extension besides all the ones listed below then upda
 - [x] [Slack](https://slack.com)
 - [x] [Evernote](https://evernote.com)
 - [x] [The Unarchiver](https://theunarchiver.com)
-- [x] [CheatSheet](https://mediaatelier.com/CheatSheet/)
 - [x] [Adobe Creative Cloud](https://www.adobe.com/creativecloud.html)
 
 
